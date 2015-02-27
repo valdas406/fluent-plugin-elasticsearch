@@ -164,8 +164,6 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
         meta['index']['_parent'] = record[@parent_key]
       end
 
-      puts record.inspect
-
       bulk_message << meta
       bulk_message << record
     end
