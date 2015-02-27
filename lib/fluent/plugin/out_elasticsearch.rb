@@ -141,6 +141,16 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
         target_index = @index_name
       end
 
+      if record.has_key? "details"
+        details = JSON.parse record["details"]
+
+        if details.has_key? "log_object"
+          record.merge! "log_object" => details["log_object"]
+          details.delete "log_object"
+          record["details"] = details.to_s
+        end
+      end
+
       if @include_tag_key
         record.merge!(@tag_key => tag)
       end
@@ -153,6 +163,8 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
       if @parent_key && record[@parent_key]
         meta['index']['_parent'] = record[@parent_key]
       end
+
+      puts record.inspect
 
       bulk_message << meta
       bulk_message << record
