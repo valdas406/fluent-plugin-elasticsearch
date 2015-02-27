@@ -142,12 +142,15 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
       end
 
       if record.has_key? "details"
-        details = JSON.parse record["details"]
+        begin
+          details = JSON.parse record["details"]
 
-        if details.has_key? "log_object"
-          record.merge! "log_object" => details["log_object"]
-          details.delete "log_object"
-          record["details"] = details.to_s
+          if details.has_key? "log_object"
+            record.merge! "log_object" => details["log_object"]
+            details.delete "log_object"
+            record["details"] = details.to_s
+          end
+        rescue
         end
       end
 
